@@ -1,9 +1,10 @@
+use adv_code_2024::*;
 use anyhow::*;
-use std::fs::File;
-use std::io::{BufRead, BufReader};
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use adv_code_2024::*;
+use itertools::Itertools;
+use std::fs::File;
+use std::io::{BufRead, BufReader};
 
 const DAY: &str = "01"; // TODO: Fill the day
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
@@ -24,13 +25,26 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        // TODO: Solve Part 1 of the puzzle
-        let answer = reader.lines().flatten().count();
+        let mut left: Vec<u32> = Vec::new();
+        let mut right: Vec<u32> = Vec::new();
+
+        for line in reader.lines().flatten() {
+            let (a, b) = line.split_once("   ").unwrap();
+            left.push(a.parse()?);
+            right.push(b.parse()?);
+        }
+        let answer: usize = left
+            .iter()
+            .sorted()
+            .zip(right.iter().sorted())
+            .map(|(a, b)| a.abs_diff(*b))
+            .sum::<u32>()
+            .try_into()?;
+
         Ok(answer)
     }
 
-    // TODO: Set the expected answer for the test input
-    assert_eq!(0, part1(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(11, part1(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part1(input_file)?);
