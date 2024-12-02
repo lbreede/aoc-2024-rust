@@ -25,21 +25,13 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let mut left: Vec<u32> = Vec::new();
-        let mut right: Vec<u32> = Vec::new();
-
-        for line in reader.lines().flatten() {
-            let (a, b) = line.split_once("   ").unwrap();
-            left.push(a.parse()?);
-            right.push(b.parse()?);
-        }
+        let (left, right) = split_columns(reader)?;
         let answer: usize = left
             .iter()
             .sorted()
             .zip(right.iter().sorted())
-            .map(|(a, b)| a.abs_diff(*b))
-            .sum::<u32>()
-            .try_into()?;
+            .map(|(&a, &b)| a.abs_diff(b))
+            .sum();
 
         Ok(answer)
     }
@@ -52,18 +44,36 @@ fn main() -> Result<()> {
     //endregion
 
     //region Part 2
-    // println!("\n=== Part 2 ===");
-    //
-    // fn part2<R: BufRead>(reader: R) -> Result<usize> {
-    //     Ok(0)
-    // }
-    //
-    // assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
-    //
-    // let input_file = BufReader::new(File::open(INPUT_FILE)?);
-    // let result = time_snippet!(part2(input_file)?);
-    // println!("Result = {}", result);
+    println!("\n=== Part 2 ===");
+
+    fn part2<R: BufRead>(reader: R) -> Result<usize> {
+        let (left, right) = split_columns(reader)?;
+        let answer = left
+            .iter()
+            .map(|&a| right.iter().filter(|&b| *b == a).count() * a)
+            .sum();
+
+        Ok(answer)
+    }
+
+    assert_eq!(31, part2(BufReader::new(TEST.as_bytes()))?);
+
+    let input_file = BufReader::new(File::open(INPUT_FILE)?);
+    let result = time_snippet!(part2(input_file)?);
+    println!("Result = {}", result);
     //endregion
 
     Ok(())
+}
+
+fn split_columns<R: BufRead>(reader: R) -> Result<(Vec<usize>, Vec<usize>)> {
+    let mut left: Vec<usize> = Vec::new();
+    let mut right: Vec<usize> = Vec::new();
+
+    for line in reader.lines().flatten() {
+        let (a, b) = line.split_once("   ").unwrap();
+        left.push(a.parse()?);
+        right.push(b.parse()?);
+    }
+    Ok((left, right))
 }
