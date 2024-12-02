@@ -88,7 +88,7 @@ fn main() -> Result<()> {
 }
 
 fn safe_report(report: &[i32]) -> bool {
-    let differences: Vec<i32> = report.iter().tuple_windows().map(|(a, b)| a - b).collect();
+    let differences: Vec<i32> = report.iter().tuple_windows().map(|(a, b)| b - a).collect();
     (differences.iter().all(|&x| x > 0) || differences.iter().all(|&x| x < 0))
         && differences.iter().all(|&x| x.abs() >= 1 && x.abs() <= 3)
 }
