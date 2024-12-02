@@ -31,11 +31,9 @@ fn main() -> Result<()> {
             .map(|line| {
                 line.split_whitespace()
                     .map(|n| n.parse::<i32>().expect("should only have numbers"))
-                    .tuple_windows()
-                    .map(|(a, b)| a - b)
                     .collect::<Vec<i32>>()
             })
-            .filter(check_differences)
+            .filter(|ns| safe_report(ns))
             .count();
         Ok(answer)
     }
@@ -57,7 +55,8 @@ fn main() -> Result<()> {
                 .split_whitespace()
                 .map(|n| n.parse::<i32>().expect("should only have number"))
                 .collect();
-            if check_differences(&numbers.iter().tuple_windows().map(|(a, b)| a - b).collect()) {
+
+            if safe_report(&numbers) {
                 answer += 1;
                 continue 'outer;
             }
@@ -69,13 +68,7 @@ fn main() -> Result<()> {
                     .enumerate()
                     .filter_map(|(j, val)| if j == i { None } else { Some(val) })
                     .collect();
-                if check_differences(
-                    &new_numbers
-                        .iter()
-                        .tuple_windows()
-                        .map(|(a, b)| a - b)
-                        .collect(),
-                ) {
+                if safe_report(&new_numbers) {
                     answer += 1;
                     continue 'outer;
                 }
@@ -94,7 +87,8 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-fn check_differences(report: &Vec<i32>) -> bool {
-    (report.iter().all(|&x| x > 0) || report.iter().all(|&x| x < 0))
-        && report.iter().all(|&x| x.abs() >= 1 && x.abs() <= 3)
+fn safe_report(report: &[i32]) -> bool {
+    let differences: Vec<i32> = report.iter().tuple_windows().map(|(a, b)| a - b).collect();
+    (differences.iter().all(|&x| x > 0) || differences.iter().all(|&x| x < 0))
+        && differences.iter().all(|&x| x.abs() >= 1 && x.abs() <= 3)
 }
