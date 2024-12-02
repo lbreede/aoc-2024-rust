@@ -6,7 +6,7 @@ use itertools::Itertools;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-const DAY: &str = "01"; // TODO: Fill the day
+const DAY: &str = "01";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
 const TEST: &str = "\
@@ -70,7 +70,7 @@ fn split_columns<R: BufRead>(reader: R) -> Result<(Vec<usize>, Vec<usize>)> {
     let mut left: Vec<usize> = Vec::new();
     let mut right: Vec<usize> = Vec::new();
 
-    for line in reader.lines().flatten() {
+    for line in reader.lines().map_while(Result::ok) {
         let (a, b) = line.split_once("   ").unwrap();
         left.push(a.parse()?);
         right.push(b.parse()?);
