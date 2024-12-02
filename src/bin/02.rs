@@ -35,10 +35,7 @@ fn main() -> Result<()> {
                     .map(|(a, b)| a - b)
                     .collect::<Vec<i32>>()
             })
-            .filter(|v| {
-                (v.iter().all(|&x| x > 0) || v.iter().all(|&x| x < 0))
-                    && v.iter().all(|&x| x.abs() >= 1 && x.abs() <= 3)
-            })
+            .filter(check_differences)
             .count();
         Ok(answer)
     }
@@ -54,10 +51,40 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        Ok(0)
+        let mut answer = 0;
+        'outer: for line in reader.lines().map_while(Result::ok) {
+            let numbers: Vec<i32> = line
+                .split_whitespace()
+                .map(|n| n.parse::<i32>().expect("should only have number"))
+                .collect();
+            if check_differences(&numbers.iter().tuple_windows().map(|(a, b)| a - b).collect()) {
+                answer += 1;
+                continue 'outer;
+            }
+
+            for i in 0..numbers.len() {
+                let new_numbers: Vec<i32> = numbers
+                    .iter()
+                    .copied()
+                    .enumerate()
+                    .filter_map(|(j, val)| if j == i { None } else { Some(val) })
+                    .collect();
+                if check_differences(
+                    &new_numbers
+                        .iter()
+                        .tuple_windows()
+                        .map(|(a, b)| a - b)
+                        .collect(),
+                ) {
+                    answer += 1;
+                    continue 'outer;
+                }
+            }
+        }
+        Ok(answer)
     }
 
-    assert_eq!(0, part2(BufReader::new(TEST.as_bytes()))?);
+    assert_eq!(4, part2(BufReader::new(TEST.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
@@ -65,4 +92,9 @@ fn main() -> Result<()> {
     //endregion
 
     Ok(())
+}
+
+fn check_differences(report: &Vec<i32>) -> bool {
+    (report.iter().all(|&x| x > 0) || report.iter().all(|&x| x < 0))
+        && report.iter().all(|&x| x.abs() >= 1 && x.abs() <= 3)
 }
