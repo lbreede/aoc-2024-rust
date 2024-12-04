@@ -157,7 +157,6 @@ fn main() -> Result<()> {
                 }
             }
         }
-
         Ok(answer)
     }
 
