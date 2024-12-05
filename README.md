@@ -3,7 +3,7 @@
 My solutions for [Advent of Code](https://adventofcode.com/2024) 2024 in [Rust](https://www.rust-lang.org/).
 
 I was encouraged to use in [RustRover](https://www.jetbrains.com/rust/) after
-reading [Advent of Code in Rust for the Rest of Us](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/)
+reading [this blog post](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/)
 by Vitaly Bragilevsky.
 
 ## Progress :star:
@@ -16,9 +16,19 @@ by Vitaly Bragilevsky.
 |  4  | :star: | :star: |
 |  5  | :star: | :star: |
 
+## Timings :stopwatch:
+
+| Day |      Part 1 |      Part 2 |
+|:---:|------------:|------------:|
+|  1  |   `1.593ms` | `497.182µs` |
+|  2  | `502.757µs` |   `1.345ms` |
+|  3  |   `1.676ms` | `776.282µs` |
+|  4  | `979.156µs` | `234.270µs` |
+|  5  |  `13.677ms` | `30.662.ms` |
+
 ***
 
-[//]: # (# Template for solving Advent of Code puzzles in Rust with RustRover)
+# Template for solving Advent of Code puzzles in Rust with RustRover
 
 Read the [blog post](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/) that
 explains the structure and rationale behind this template.
@@ -47,5 +57,3 @@ explains the structure and rationale behind this template.
 3. When you're done with the first part of the puzzle, use folding to hide *Part 1*.
 
 4. Uncomment *Part 2*, fill in the test data assertion, and start solving it.
-
-# aoc-2024-rust
