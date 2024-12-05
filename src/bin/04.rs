@@ -32,11 +32,11 @@ fn main() -> Result<()> {
 
         let word_search = reader
             .lines()
-            .map(|line| line.unwrap().chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>();
+            .map(|line| line.unwrap().bytes().collect::<Vec<u8>>())
+            .collect::<Vec<Vec<u8>>>();
         for (i, row) in word_search.iter().enumerate() {
             for (j, &char) in row.iter().enumerate() {
-                if char != 'X' {
+                if char != b'X' {
                     continue;
                 };
                 if i.checked_sub(3).is_some() {
@@ -44,21 +44,21 @@ fn main() -> Result<()> {
                     let b = &word_search[i - 2];
                     let c = &word_search[i - 3];
                     if j.checked_sub(3).is_some() {
-                        if let ('M', 'A', 'S') = (a[j - 1], b[j - 2], c[j - 3]) {
+                        if let (b'M', b'A', b'S') = (a[j - 1], b[j - 2], c[j - 3]) {
                             answer += 1;
                         }
                     }
-                    if let ('M', 'A', 'S') = (a[j], b[j], c[j]) {
+                    if let (b'M', b'A', b'S') = (a[j], b[j], c[j]) {
                         answer += 1;
                     }
-                    if let Some('S') = c.get(j + 3) {
-                        if let ('M', 'A') = (a[j + 1], b[j + 2]) {
+                    if let Some(b'S') = c.get(j + 3) {
+                        if let (b'M', b'A') = (a[j + 1], b[j + 2]) {
                             answer += 1;
                         }
                     }
                 }
                 if j.checked_sub(3).is_some() {
-                    if let ('M', 'A', 'S') = (
+                    if let (b'M', b'A', b'S') = (
                         word_search[i][j - 1],
                         word_search[i][j - 2],
                         word_search[i][j - 3],
@@ -67,7 +67,7 @@ fn main() -> Result<()> {
                     }
                 }
                 if word_search[i].get(j + 3).is_some() {
-                    if let ('M', 'A', 'S') = (
+                    if let (b'M', b'A', b'S') = (
                         word_search[i][j + 1],
                         word_search[i][j + 2],
                         word_search[i][j + 3],
@@ -80,15 +80,15 @@ fn main() -> Result<()> {
                     let b = &word_search[i + 2];
                     let c = &word_search[i + 3];
                     if j.checked_sub(3).is_some() {
-                        if let ('M', 'A', 'S') = (a[j - 1], b[j - 2], c[j - 3]) {
+                        if let (b'M', b'A', b'S') = (a[j - 1], b[j - 2], c[j - 3]) {
                             answer += 1;
                         }
                     }
-                    if let ('M', 'A', 'S') = (a[j], b[j], c[j]) {
+                    if let (b'M', b'A', b'S') = (a[j], b[j], c[j]) {
                         answer += 1
                     }
                     if c.get(j + 3).is_some() {
-                        if let ('M', 'A', 'S') = (a[j + 1], b[j + 2], c[j + 3]) {
+                        if let (b'M', b'A', b'S') = (a[j + 1], b[j + 2], c[j + 3]) {
                             answer += 1;
                         }
                     }
@@ -113,13 +113,13 @@ fn main() -> Result<()> {
 
         let word_search = reader
             .lines()
-            .map(|line| line.unwrap().chars().collect::<Vec<char>>())
-            .collect::<Vec<Vec<char>>>();
+            .map(|line| line.unwrap().bytes().collect::<Vec<u8>>())
+            .collect::<Vec<Vec<u8>>>();
         let height = word_search.len();
         for (i, row) in word_search.iter().enumerate() {
             let width = row.len();
             for (j, &char) in row.iter().enumerate() {
-                if char != 'A' || i == 0 || i == height - 1 || j == 0 || j == width - 1 {
+                if char != b'A' || i == 0 || i == height - 1 || j == 0 || j == width - 1 {
                     continue;
                 }
                 match (
@@ -128,10 +128,10 @@ fn main() -> Result<()> {
                     word_search[i + 1][j + 1],
                     word_search[i + 1][j - 1],
                 ) {
-                    ('M', 'M', 'S', 'S') => answer += 1,
-                    ('M', 'S', 'S', 'M') => answer += 1,
-                    ('S', 'M', 'M', 'S') => answer += 1,
-                    ('S', 'S', 'M', 'M') => answer += 1,
+                    (b'M', b'M', b'S', b'S') => answer += 1,
+                    (b'M', b'S', b'S', b'M') => answer += 1,
+                    (b'S', b'M', b'M', b'S') => answer += 1,
+                    (b'S', b'S', b'M', b'M') => answer += 1,
                     _ => continue,
                 }
             }
