@@ -18,6 +18,8 @@ by Vitaly Bragilevsky.
 
 ## Timings :stopwatch:
 
+`cargo run --bin <DAY> --profile release`
+
 | Day |      Part 1 |      Part 2 |
 |:---:|------------:|------------:|
 |  1  |   `1.593ms` | `497.182µs` |
