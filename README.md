@@ -6,6 +6,8 @@ I was encouraged to use in [RustRover](https://www.jetbrains.com/rust/) after
 reading [Advent of Code in Rust for the Rest of Us](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/)
 by Vitaly Bragilevsky.
 
+## :star: Progress
+
 | Day | Part 1 | Part 2 |
 |:---:|:------:|:------:|
 |  1  | :star: | :star: |
