@@ -1,4 +1,4 @@
-# :christmas_tree: Advent of Code 2024 in Rust :crab:
+# Advent of Code 2024 in Rust :christmas_tree::crab:
 
 My solutions for [Advent of Code](https://adventofcode.com/2024) 2024 in [Rust](https://www.rust-lang.org/).
 
@@ -6,7 +6,7 @@ I was encouraged to use in [RustRover](https://www.jetbrains.com/rust/) after
 reading [Advent of Code in Rust for the Rest of Us](https://blog.jetbrains.com/rust/2024/11/29/advent-of-code-in-rust-for-the-rest-of-us/)
 by Vitaly Bragilevsky.
 
-## :star: Progress
+## Progress :star:
 
 | Day | Part 1 | Part 2 |
 |:---:|:------:|:------:|
