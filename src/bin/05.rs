@@ -150,7 +150,7 @@ fn parse_pages_to_produce(lines: &[String]) -> Vec<Vec<usize>> {
     lines
         .iter()
         .skip_while(|line| !line.is_empty())
-        .skip(1) // Skip the empty line separating sections
+        .skip(1)
         .map(|line| {
             line.split(",")
                 .map(|x| x.parse().expect("Invalid number in pages to produce"))
