@@ -5,7 +5,7 @@ use const_format::concatcp;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
-const DAY: &str = "05"; // TODO: Fill the day
+const DAY: &str = "05";
 const INPUT_FILE: &str = concatcp!("input/", DAY, ".txt");
 
 const EXAMPLE: &str = "\
