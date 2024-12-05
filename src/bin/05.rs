@@ -66,12 +66,11 @@ fn main() -> Result<()> {
 
         let mut answer = 0;
         for pages in pages_to_produce {
-            let mut k = 1;
+            let mut k = 1; // FIXME: I HATE THIS
             'outer: for (i, &page) in pages.iter().enumerate() {
                 for &next_page in pages[i + 1..].iter() {
                     for &rule in &page_ordering_rules {
                         if rule == [next_page, page] {
-                            println!("VIOLATING RULE: {}|{}", next_page, page);
                             k = 0;
                             break 'outer;
                         }
