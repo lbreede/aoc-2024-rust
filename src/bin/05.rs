@@ -46,27 +46,9 @@ fn main() -> Result<()> {
     println!("=== Part 1 ===");
 
     fn part1<R: BufRead>(reader: R) -> Result<usize> {
-        let mut parse_page_nums = true;
-        let mut page_ordering_rules: Vec<[usize; 2]> = Vec::new();
-        let mut pages_to_produce: Vec<Vec<usize>> = Vec::new();
-        for line in reader.lines().map_while(Result::ok) {
-            if line.is_empty() {
-                parse_page_nums = false;
-                continue;
-            }
-            if parse_page_nums {
-                let (x, y) = line.split_once("|").unwrap();
-                let x: usize = x.parse()?;
-                let y: usize = y.parse()?;
-                page_ordering_rules.push([x, y]);
-            } else {
-                pages_to_produce.push(
-                    line.split(",")
-                        .map(|x| x.parse::<usize>().unwrap())
-                        .collect(),
-                )
-            }
-        }
+        let lines: Vec<String> = reader.lines().map_while(Result::ok).collect();
+        let page_ordering_rules = parse_page_ordering_rules(&lines);
+        let pages_to_produce = parse_pages_to_produce(&lines);
 
         let mut answer = 0;
         for pages in pages_to_produce {
@@ -95,27 +77,9 @@ fn main() -> Result<()> {
     println!("\n=== Part 2 ===");
 
     fn part2<R: BufRead>(reader: R) -> Result<usize> {
-        let mut parse_page_nums = true;
-        let mut page_ordering_rules: Vec<[usize; 2]> = Vec::new();
-        let mut pages_to_produce: Vec<Vec<usize>> = Vec::new();
-        for line in reader.lines().map_while(Result::ok) {
-            if line.is_empty() {
-                parse_page_nums = false;
-                continue;
-            }
-            if parse_page_nums {
-                let (x, y) = line.split_once("|").unwrap();
-                let x: usize = x.parse()?;
-                let y: usize = y.parse()?;
-                page_ordering_rules.push([x, y]);
-            } else {
-                pages_to_produce.push(
-                    line.split(",")
-                        .map(|x| x.parse::<usize>().unwrap())
-                        .collect(),
-                )
-            }
-        }
+        let lines: Vec<String> = reader.lines().map_while(Result::ok).collect();
+        let page_ordering_rules = parse_page_ordering_rules(&lines);
+        let pages_to_produce = parse_pages_to_produce(&lines);
 
         let mut answer = 0;
         for mut pages in pages_to_produce {
@@ -157,4 +121,40 @@ fn main() -> Result<()> {
     //endregion
 
     Ok(())
+}
+
+/// This function parses the first part of the input. The two parts are separated by an empty line,
+/// therefore `take_while` can be used to create an iterator from the beginning until an empty line
+/// is reached. That iterator can then be processed using `map` and `split_once("|")`.
+fn parse_page_ordering_rules(lines: &[String]) -> Vec<[usize; 2]> {
+    lines
+        .iter()
+        .take_while(|line| !line.is_empty())
+        .map(|line| {
+            let (x, y) = line
+                .split_once("|")
+                .expect("Invalid format in page ordering rules");
+            [
+                x.parse().expect("Invalid number in page ordering rules"),
+                y.parse().expect("Invalid number in page ordering rules"),
+            ]
+        })
+        .collect()
+}
+
+/// This function parses the second part of the input. The two parts are separated by an empty line,
+/// therefore `skip_while` can be used to ignore all items until an empty line is reached. `skip(1)`
+/// is used too to ignore the empty line. From there until the end, the iterator can then be
+/// processed using `map`, `split`, and `parse`.
+fn parse_pages_to_produce(lines: &[String]) -> Vec<Vec<usize>> {
+    lines
+        .iter()
+        .skip_while(|line| !line.is_empty())
+        .skip(1) // Skip the empty line separating sections
+        .map(|line| {
+            line.split(",")
+                .map(|x| x.parse().expect("Invalid number in pages to produce"))
+                .collect()
+        })
+        .collect()
 }
