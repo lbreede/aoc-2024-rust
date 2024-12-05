@@ -52,16 +52,16 @@ fn main() -> Result<()> {
 
         let mut answer = 0;
         for pages in pages_to_produce {
-            let mut k = 1; // FIXME: I HATE THIS
+            let mut validity = 1;
             'outer: for (i, &page) in pages.iter().enumerate() {
                 for &next_page in pages[i + 1..].iter() {
                     if page_ordering_rules.contains(&[next_page, page]) {
-                        k = 0;
+                        validity = 0;
                         break 'outer;
                     }
                 }
             }
-            answer += pages.get(pages.len().div_euclid(2)).unwrap() * k;
+            answer += pages.get(pages.len().div_euclid(2)).unwrap() * validity;
         }
         Ok(answer)
     }
