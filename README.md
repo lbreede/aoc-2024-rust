@@ -15,6 +15,7 @@ by Vitaly Bragilevsky.
 |  3  | :star: | :star: |
 |  4  | :star: | :star: |
 |  5  | :star: | :star: |
+|  6  | :star: | :star: |
 
 ## Timings :stopwatch:
 
@@ -26,7 +27,8 @@ by Vitaly Bragilevsky.
 |  2  | `502.757µs` |   `1.345ms` |
 |  3  |   `1.676ms` | `776.282µs` |
 |  4  | `979.156µs` | `234.270µs` |
-|  5  |  `13.677ms` | `30.662.ms` |
+|  5  |  `13.677ms` |  `30.662ms` |
+|  6  |  `516.75µs` |   `7.650 s` |
 
 ***
 
