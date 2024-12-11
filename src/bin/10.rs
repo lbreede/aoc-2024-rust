@@ -59,6 +59,36 @@ const EXAMPLE5: &str = "\
 ..9....
 ";
 
+const EXAMPLE6: &str = "\
+..90..9
+...1.98
+...2..7
+6543456
+765.987
+876....
+987....
+";
+
+const EXAMPLE7: &str = "\
+012345
+123456
+234567
+345678
+4.6789
+56789.
+";
+
+const EXAMPLE8: &str = "\
+89010123
+78121874
+87430965
+96549874
+45678903
+32019012
+01329801
+10456732
+";
+
 fn main() -> Result<()> {
     start_day(DAY);
 
@@ -97,6 +127,9 @@ fn main() -> Result<()> {
     }
 
     assert_eq!(3, part2(BufReader::new(EXAMPLE5.as_bytes()))?);
+    assert_eq!(13, part2(BufReader::new(EXAMPLE6.as_bytes()))?);
+    assert_eq!(227, part2(BufReader::new(EXAMPLE7.as_bytes()))?);
+    assert_eq!(81, part2(BufReader::new(EXAMPLE8.as_bytes()))?);
 
     let input_file = BufReader::new(File::open(INPUT_FILE)?);
     let result = time_snippet!(part2(input_file)?);
