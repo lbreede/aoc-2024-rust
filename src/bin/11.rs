@@ -29,31 +29,27 @@ fn main() -> Result<()> {
             .map(|s| s.parse::<usize>().expect("Should be a number"))
             .collect();
 
-        // let mut buffer = VecDeque::with_capacity(numbers.len() * 2);
+        let mut buffer = VecDeque::with_capacity(numbers.len() * 2);
 
         for i in 0..iterations {
             println!("Iteration {}", i + 1);
-            // Convert VecDeque into Vec for parallel processing.
-            let numbers_vec: Vec<usize> = numbers.drain(..).collect();
 
-            // Parallelize the processing of numbers using Rayon.
-            let processed: Vec<usize> = numbers_vec
-                .into_par_iter()
-                .flat_map(|number| {
-                    let digits = number_of_digits(number); // Precompute number of digits.
-                    match number {
-                        0 => vec![1], // Replace with 1.
-                        _ if digits % 2 == 0 => {
-                            let div = 10usize.pow((digits / 2) as u32);
-                            vec![number / div, number % div] // Split number.
-                        }
-                        _ => vec![number * 2024], // Multiply by 2024.
+            buffer.clear(); // Reuse buffer to avoid reallocations.
+
+            while let Some(number) = numbers.pop_front() {
+                match number {
+                    0 => buffer.push_back(1),
+                    n if number_of_digits(n) % 2 == 0 => {
+                        let div = 10usize.pow((number_of_digits(n) / 2) as u32);
+                        buffer.push_back(n / div);
+                        buffer.push_back(n % div);
                     }
-                })
-                .collect();
+                    n => buffer.push_back(n * 2024),
+                }
+            }
 
-            // Convert processed Vec back to VecDeque for the next iteration.
-            numbers = processed.into();
+            // Swap numbers with buffer (no reallocation).
+            std::mem::swap(&mut numbers, &mut buffer);
         }
 
         Ok(numbers.len())
