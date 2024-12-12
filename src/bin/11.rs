@@ -2,8 +2,7 @@ use adv_code_2024::*;
 use anyhow::Result;
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
-use rayon::prelude::*;
-use std::collections::VecDeque;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -23,36 +22,27 @@ fn main() -> Result<()> {
         let mut content = String::new();
         reader.read_line(&mut content)?;
 
-        // Parse numbers into a VecDeque.
-        let mut numbers: VecDeque<usize> = content
+        let mut numbers: HashMap<usize, usize> = content
             .split_whitespace()
-            .map(|s| s.parse::<usize>().expect("Should be a number"))
+            .map(|s| (s.parse::<usize>().expect("Should be a number"), 1))
             .collect();
 
-        let mut buffer = VecDeque::with_capacity(numbers.len() * 2);
-
-        for i in 0..iterations {
-            println!("Iteration {}", i + 1);
-
-            buffer.clear(); // Reuse buffer to avoid reallocations.
-
-            while let Some(number) = numbers.pop_front() {
-                match number {
-                    0 => buffer.push_back(1),
+        for _ in 0..iterations {
+            let mut new_numbers = HashMap::new();
+            for (&n, &count) in &numbers {
+                match n {
+                    0 => *new_numbers.entry(1).or_insert(0) += count,
                     n if number_of_digits(n) % 2 == 0 => {
                         let div = 10usize.pow((number_of_digits(n) / 2) as u32);
-                        buffer.push_back(n / div);
-                        buffer.push_back(n % div);
+                        *new_numbers.entry(n / div).or_insert(0) += count;
+                        *new_numbers.entry(n % div).or_insert(0) += count;
                     }
-                    n => buffer.push_back(n * 2024),
+                    n => *new_numbers.entry(n * 2024).or_insert(0) += count,
                 }
             }
-
-            // Swap numbers with buffer (no reallocation).
-            std::mem::swap(&mut numbers, &mut buffer);
+            numbers = new_numbers;
         }
-
-        Ok(numbers.len())
+        Ok(numbers.values().sum())
     }
 
     assert_eq!(7, part1(BufReader::new(EXAMPLE.as_bytes()), 1)?);
@@ -82,9 +72,8 @@ fn main() -> Result<()> {
 }
 
 fn number_of_digits(n: usize) -> usize {
-    if n == 0 {
-        1
-    } else {
-        (n as f64).log10() as usize + 1
+    match n {
+        0 => 1,
+        n => (n as f64).log10() as usize + 1,
     }
 }
