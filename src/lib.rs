@@ -6,7 +6,6 @@ pub fn start_day(day: &str) {
 
 // Additional common functions
 
-/// TODO: Make this generic over `T`
 #[derive(Debug)]
 pub struct Grid {
     pub data: Vec<Vec<u8>>,
