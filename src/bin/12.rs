@@ -3,6 +3,7 @@ use anyhow::{Context, Result};
 use code_timing_macros::time_snippet;
 use const_format::concatcp;
 use itertools::Itertools;
+use std::collections::HashSet;
 use std::fs::File;
 use std::io::{BufRead, BufReader};
 
@@ -54,6 +55,8 @@ ABBAAA
 AAAAAA
 ";
 
+type Region = HashSet<Position>;
+
 fn main() -> Result<()> {
     start_day(DAY);
 
@@ -70,20 +73,14 @@ fn main() -> Result<()> {
             let perimeter: usize = region
                 .iter()
                 .map(|pos| {
-                    let x = pos.x;
-                    let y = pos.y;
                     let mut neighbours = 0;
-                    if region.iter().contains(&Position { x, y: y - 1 }) {
-                        neighbours += 1;
-                    }
-                    if region.iter().contains(&Position { x: x + 1, y }) {
-                        neighbours += 1;
-                    }
-                    if region.iter().contains(&Position { x, y: y + 1 }) {
-                        neighbours += 1;
-                    }
-                    if region.iter().contains(&Position { x: x - 1, y }) {
-                        neighbours += 1;
+                    for (x, y) in [(0, -1), (1, 0), (0, 1), (-1, 0)].iter() {
+                        if region.iter().contains(&Position {
+                            x: pos.x + x,
+                            y: pos.y + y,
+                        }) {
+                            neighbours += 1;
+                        }
                     }
                     4 - neighbours
                 })
@@ -115,80 +112,23 @@ fn main() -> Result<()> {
             let sides: usize = region
                 .iter()
                 .map(|pos| {
+                    let n = region.contains(&Position::new(pos.x, pos.y - 1));
+                    let ne = region.contains(&Position::new(pos.x + 1, pos.y - 1));
+                    let e = region.contains(&Position::new(pos.x + 1, pos.y));
+                    let se = region.contains(&Position::new(pos.x + 1, pos.y + 1));
+                    let s = region.contains(&Position::new(pos.x, pos.y + 1));
+                    let sw = region.contains(&Position::new(pos.x - 1, pos.y + 1));
+                    let w = region.contains(&Position::new(pos.x - 1, pos.y));
+                    let nw = region.contains(&Position::new(pos.x - 1, pos.y - 1));
+
                     let mut corners = 0;
-                    let x = pos.x;
-                    let y = pos.y;
-
-                    let top = Position { x, y: y - 1 };
-                    let right = Position { x: x + 1, y };
-                    let bottom = Position { x, y: y + 1 };
-                    let left = Position { x: x - 1, y };
-
-                    // Top right
-                    //
-                    // +---+---+   +---+---+   +---+---+
-                    // | A |   |   |   |   |   |   | A |
-                    // +---X---+   +---X---+   +---X---+
-                    // | A | A |   | A |   |   | A |   |
-                    // +---+---+   +---+---+   +---+---+
-                    //
-                    let top_right = Position { x: x + 1, y: y - 1 };
-                    if (region.contains(&top)
-                        && region.contains(&right)
-                        && !region.contains(&top_right))
-                        || (!region.contains(&top)
-                            && !region.contains(&right)
-                            && !region.contains(&top_right))
-                        || (!region.contains(&top)
-                            && !region.contains(&right)
-                            && region.contains(&top_right))
-                    {
-                        corners += 1;
-                    }
-
-                    // Bottom right
-                    let bottom_right = Position { x: x + 1, y: y + 1 };
-                    if (region.contains(&right)
-                        && region.contains(&bottom)
-                        && !region.contains(&bottom_right))
-                        || (!region.contains(&right)
-                            && !region.contains(&bottom)
-                            && !region.contains(&bottom_right)
-                            || (!region.contains(&right)
-                                && !region.contains(&bottom)
-                                && region.contains(&bottom_right)))
-                    {
-                        corners += 1;
-                    }
-
-                    // Bottom left
-                    let bottom_left = Position { x: x - 1, y: y + 1 };
-                    if (region.contains(&bottom)
-                        && region.contains(&left)
-                        && !region.contains(&bottom_left))
-                        || (!region.contains(&bottom)
-                            && !region.contains(&left)
-                            && !region.contains(&bottom_left)
-                            || (!region.contains(&bottom)
-                                && !region.contains(&left)
-                                && region.contains(&bottom_left)))
-                    {
-                        corners += 1;
-                    }
-
-                    // Top left
-                    let top_left = Position { x: x - 1, y: y - 1 };
-                    if (region.contains(&left)
-                        && region.contains(&top)
-                        && !region.contains(&top_left))
-                        || (!region.contains(&left)
-                            && !region.contains(&top)
-                            && !region.contains(&top_left)
-                            || (!region.contains(&left)
-                                && !region.contains(&top)
-                                && region.contains(&top_left)))
-                    {
-                        corners += 1;
+                    for (i, j, k) in [(n, ne, e), (e, se, s), (s, sw, w), (w, nw, n)].into_iter() {
+                        corners += match (i, j, k) {
+                            (true, false, true) => 1,
+                            (false, false, false) => 1,
+                            (false, true, false) => 1,
+                            _ => 0,
+                        }
                     }
                     corners
                 })
@@ -212,14 +152,20 @@ fn main() -> Result<()> {
     Ok(())
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, Eq, PartialEq, Hash)]
 struct Position {
     x: i32,
     y: i32,
 }
 
-fn flood_fill(target: u8, x: i32, y: i32, grid: &Grid, mut region: Vec<Position>) -> Vec<Position> {
-    region.push(Position { x, y });
+impl Position {
+    fn new(x: i32, y: i32) -> Self {
+        Self { x, y }
+    }
+}
+
+fn flood_fill(target: u8, x: i32, y: i32, grid: &Grid, mut region: Region) -> Region {
+    region.insert(Position { x, y });
     if let Some(north) = grid.get_value(x, y - 1) {
         if north == target && !region.contains(&Position { x, y: y - 1 }) {
             region = flood_fill(target, x, y - 1, grid, region);
@@ -242,8 +188,8 @@ fn flood_fill(target: u8, x: i32, y: i32, grid: &Grid, mut region: Vec<Position>
     }
     region
 }
-fn find_regions(grid: Grid) -> Vec<Vec<Position>> {
-    let mut regions: Vec<Vec<Position>> = Vec::new();
+fn find_regions(grid: Grid) -> Vec<Region> {
+    let mut regions: Vec<Region> = Vec::new();
     for i in 0..grid.height() {
         for j in 0..grid.width() {
             let value = grid
@@ -256,7 +202,7 @@ fn find_regions(grid: Grid) -> Vec<Vec<Position>> {
                     y: i as i32,
                 })
             }) {
-                let region: Vec<Position> = Vec::new();
+                let region: Region = HashSet::new();
                 let region = flood_fill(value, j as i32, i as i32, &grid, region);
                 regions.push(region);
             }
