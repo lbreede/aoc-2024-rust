@@ -24,7 +24,7 @@ fn main() -> Result<()> {
 
         let mut numbers: HashMap<usize, usize> = content
             .split_whitespace()
-            .map(|s| (s.parse::<usize>().expect("Should be a number"), 1))
+            .map(|s| (s.parse::<usize>().expect("should be a number"), 1))
             .collect();
 
         for _ in 0..iterations {
