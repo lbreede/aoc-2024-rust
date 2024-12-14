@@ -1,4 +1,5 @@
 use std::io::BufRead;
+use std::ops::{Add, AddAssign};
 
 pub fn start_day(day: &str) {
     println!("Advent of Code 2024 - Day {:0>2}", day);
@@ -39,6 +40,34 @@ impl Grid {
     }
 }
 
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub struct Vector2<T> {
+    x: T,
+    y: T,
+}
+
+impl<T> Vector2<T> {
+    pub fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+}
+
+impl Add for Vector2<usize> {
+    type Output = Vector2<usize>;
+    fn add(self, rhs: Self) -> Self::Output {
+        Vector2::new(self.x + rhs.x, self.y + rhs.y)
+    }
+}
+
+impl AddAssign for Vector2<usize> {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -46,5 +75,10 @@ mod tests {
     #[test]
     fn it_works() {
         start_day("00");
+    }
+
+    #[test]
+    fn add_two_vec_usize() {
+        assert_eq!(Vector2::new(2, 3) + Vector2::new(4, 6), Vector2::new(6, 9));
     }
 }
